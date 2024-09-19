@@ -1,0 +1,38 @@
+{
+    "name": "helix-safe",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev -p 3001",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.10.5",
+        "@emotion/styled": "^11.10.5",
+        "@mui/icons-material": "^5.11.0",
+        "@mui/lab": "^5.0.0-alpha.137",
+        "@mui/material": "^5.10.15",
+        "@mysten/dapp-kit": "^0.14.11",
+        "@mysten/sui": "^1.2.1",
+        "@tanstack/react-query": "^5.12.2",
+        "axios": "^1.7.3",
+        "cors": "^2.8.5",
+        "mongoose": "^8.5.2",
+        "next": "^14.2.5",
+        "react": "^18.2",
+        "react-dom": "^18.2",
+        "react-syntax-highlighter": "^15.5.0"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.17",
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "@types/react-syntax-highlighter": "^15.5.13",
+        "eslint": "^8",
+        "eslint-config-next": "14.2.2",
+        "typescript": "^5"
+    }
+}
