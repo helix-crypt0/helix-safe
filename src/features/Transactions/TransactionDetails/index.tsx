@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useGlobalContext } from "@src/contexts/GlobalContext";
 import TransactionItem from "../TransactionItem";
+import CopyButton from "@src/components/CopyButton";
 
 interface Props {
     txn: ITransaction;
@@ -30,6 +31,10 @@ const TransactionDetails: React.FC<Props> = ({ txn }) => {
     const { selectedMSig } = useGlobalContext();
     const router = useRouter();
     const [details, setDetails] = useState<DryRunTransactionBlockResponse>();
+    const [objIdToTypes, setObjIdToTypes] = useState<{ [key: string]: string }>(
+        {}
+    );
+    const [isObjNameCopied, setIsObjNameCopied] = useState<boolean>(false);
 
     useEffect(() => {
         const getDetails = async () => {
@@ -37,6 +42,25 @@ const TransactionDetails: React.FC<Props> = ({ txn }) => {
             const dryRun = await suiClient.dryRunTransactionBlock({
                 transactionBlock: txn.bytesB64,
             });
+
+            const tx: any = dryRun.input.transaction;
+            const ids: string[] = tx.inputs
+                .map((input: any) => input.objectId)
+                .filter((id: string) => !!id);
+            const objTypes = await suiClient.multiGetObjects({
+                ids,
+                options: {
+                    showType: true,
+                },
+            });
+            const objIdToTypes: { [key: string]: string } = {};
+            objTypes.forEach((obj) => {
+                if (obj?.data?.objectId && obj?.data?.type) {
+                    objIdToTypes[obj.data.objectId] = obj.data.type;
+                }
+            });
+
+            setObjIdToTypes(objIdToTypes);
             setDetails(dryRun);
         };
         getDetails();
@@ -69,8 +93,37 @@ const TransactionDetails: React.FC<Props> = ({ txn }) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography>{value}</Typography>
+                    <Typography>
+                        {value}
+                        {title === "objectId" && (
+                            <CopyButton
+                                txtToCopy={value}
+                                setCopied={setIsObjNameCopied}
+                                copied={isObjNameCopied}
+                            />
+                        )}
+                    </Typography>
                 </Grid>
+                {title === "objectId" && objIdToTypes[value] && (
+                    <Grid
+                        container
+                        direction={"row"}
+                        gap={0.5}
+                        key={keyValue || title + value}
+                    >
+                        <Grid item xs={5} md={3} lg={2.5}>
+                            <Typography
+                                variant="subtitle2"
+                                className="slightText"
+                            >
+                                objectName
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography>{objIdToTypes[value]}</Typography>
+                        </Grid>
+                    </Grid>
+                )}
             </Grid>
         );
     };
